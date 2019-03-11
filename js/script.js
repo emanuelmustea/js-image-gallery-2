@@ -1,76 +1,82 @@
 // a list of all images
+let carouselContainer = document.querySelector(".carousel");
+let sliderContainer = document.querySelector(".carousel > .slider");
+
 let images = document.querySelectorAll(".carousel > .slider > img");
-let container = document.querySelector(".carousel");
-let slider = document.querySelector(".carousel > .slider");
-let next = document.querySelector(".carousel > .next");
-let prev = document.querySelector(".carousel > .prev");
-//i is the current image
-let i = 1;
-let max = images.length;
-//the width of the carousel container
-let width = container.offsetWidth;
-let running = false;
-let duration = 1000;
+let imagesCount = images.length;
+
+let nextButton = document.querySelector(".carousel > .next");
+let prevButton = document.querySelector(".carousel > .prev");
+
+let currentImageIndex = 1;
+let carouselContainerWidth = carouselContainer.offsetWidth;
+let isSliding = false;
+let transitionDuration = 1000;
+
+sliderContainer.insertBefore(images[imagesCount - 1], images[0]);
+images = document.querySelectorAll(".carousel > .slider > img");
 
 const disableRunning = element => {
   setTimeout(() => {
-    running = false;
+    isSliding = false;
     element.classList.remove("disabled");
-  }, duration);
+  }, transitionDuration);
 };
 
 const enableRunning = element => {
-  running = true;
+  isSliding = true;
   element.classList.add("disabled");
   disableRunning(element);
 };
 
-const changeLeft = () => {
-  slider.style.transition = `left ${duration}ms`;
+const moveSliderContainer = () => {
+  sliderContainer.style.transition = `left ${transitionDuration}ms`;
   setTimeout(() => {
-    slider.style.transition = `left 0ms`;
-  }, duration);
-  slider.style.left = `${-1 * i * width}px`;
+    sliderContainer.style.transition = `left 0ms`;
+  }, transitionDuration);
+  sliderContainer.style.left = `${-1 *
+    currentImageIndex *
+    carouselContainerWidth}px`;
 };
-const reorder = type => {
-  if (type == "last") {
-    slider.style.left = "0px";
-    slider.insertBefore(images[max - 1], images[0]);
-    images = document.querySelectorAll(".carousel > .slider > img");
-  }
-  if (type == "first") {
-    slider.style.left = `${-1 * i * width}px`;
-    slider.appendChild(images[0]);
-    images = document.querySelectorAll(".carousel > .slider > img");
-  }
+const reorderLastImage = type => {
+  sliderContainer.style.left = "0px";
+  sliderContainer.insertBefore(images[imagesCount - 1], images[0]);
+  images = document.querySelectorAll(".carousel > .slider > img");
 };
-next.addEventListener("click", e => {
-  if (!running) {
-    if (i < max - 1) {
-      i++;
-      changeLeft();
+const reorderFirstImage = type => {
+  sliderContainer.style.left = `${-1 *
+    currentImageIndex *
+    carouselContainerWidth}px`;
+  sliderContainer.appendChild(images[0]);
+  images = document.querySelectorAll(".carousel > .slider > img");
+};
+nextButton.addEventListener("click", e => {
+  if (!isSliding) {
+    if (currentImageIndex < imagesCount - 1) {
+      currentImageIndex++;
+      moveSliderContainer();
     } else {
-      i = 0;
-      reorder("last");
-      i++;
+      currentImageIndex = 0;
+      reorderLastImage();
+      currentImageIndex++;
       setTimeout(() => {
-        changeLeft();
+        moveSliderContainer();
       }, 1);
     }
     enableRunning(e.srcElement);
   }
 });
-prev.addEventListener("click", e => {
-  if (!running) {
-    if (i >= 1) {
-      i--;
-      changeLeft();
+prevButton.addEventListener("click", e => {
+  if (!isSliding) {
+    if (currentImageIndex >= 1) {
+      currentImageIndex--;
+      moveSliderContainer();
     } else {
-      i = max - 1;
-      reorder("first");
-      i--;
+      currentImageIndex = imagesCount - 1;
+      reorderFirstImage();
+      currentImageIndex--;
       setTimeout(() => {
-        changeLeft();
+        moveSliderContainer();
       }, 1);
     }
     enableRunning(e.srcElement);
