@@ -13,72 +13,69 @@ let carouselContainerWidth = carouselContainer.offsetWidth;
 let isSliding = false;
 let transitionDuration = 1000;
 
-sliderContainer.insertBefore(images[imagesCount - 1], images[0]);
-images = document.querySelectorAll(".carousel > .slider > img");
+const cloneImages = () => {
+  let firstImage = images[0];
+  let lastImage = images[imagesCount - 1];
+  sliderContainer.appendChild(firstImage.cloneNode(true));
+  sliderContainer.insertBefore(lastImage.cloneNode(true), images[0]);
+  images = document.querySelectorAll(".carousel > .slider > img");
+};
 
-const disableRunning = element => {
+const disableSliding = element => {
   setTimeout(() => {
     isSliding = false;
     element.classList.remove("disabled");
   }, transitionDuration);
 };
-
-const enableRunning = element => {
+const enableSliding = element => {
   isSliding = true;
   element.classList.add("disabled");
-  disableRunning(element);
+  disableSliding(element);
 };
 
-const moveSliderContainer = () => {
-  sliderContainer.style.transition = `left ${transitionDuration}ms`;
-  setTimeout(() => {
-    sliderContainer.style.transition = `left 0ms`;
-  }, transitionDuration);
+const moveSliderContainer = (animate = true) => {
   sliderContainer.style.left = `${-1 *
     currentImageIndex *
     carouselContainerWidth}px`;
-};
-const reorderLastImage = type => {
-  sliderContainer.style.left = "0px";
-  sliderContainer.insertBefore(images[imagesCount - 1], images[0]);
-  images = document.querySelectorAll(".carousel > .slider > img");
-};
-const reorderFirstImage = type => {
-  sliderContainer.style.left = `${-1 *
-    currentImageIndex *
-    carouselContainerWidth}px`;
-  sliderContainer.appendChild(images[0]);
-  images = document.querySelectorAll(".carousel > .slider > img");
-};
-nextButton.addEventListener("click", e => {
-  if (!isSliding) {
-    if (currentImageIndex < imagesCount - 1) {
-      currentImageIndex++;
-      moveSliderContainer();
-    } else {
-      currentImageIndex = 0;
-      reorderLastImage();
-      currentImageIndex++;
-      setTimeout(() => {
-        moveSliderContainer();
-      }, 1);
-    }
-    enableRunning(e.srcElement);
+  if (animate) {
+    sliderContainer.style.transition = `left ${transitionDuration}ms`;
+    setTimeout(() => {
+      sliderContainer.style.transition = `left 0ms`;
+    }, transitionDuration);
   }
-});
-prevButton.addEventListener("click", e => {
-  if (!isSliding) {
-    if (currentImageIndex >= 1) {
-      currentImageIndex--;
-      moveSliderContainer();
-    } else {
-      currentImageIndex = imagesCount - 1;
-      reorderFirstImage();
-      currentImageIndex--;
-      setTimeout(() => {
-        moveSliderContainer();
-      }, 1);
-    }
-    enableRunning(e.srcElement);
+};
+const nextPhoto = event => {
+  if (isSliding) return;
+  if (currentImageIndex < imagesCount) {
+    currentImageIndex++;
+    moveSliderContainer();
+  } else {
+    currentImageIndex++;
+    moveSliderContainer();
+    setTimeout(() => {
+      currentImageIndex = 1;
+      moveSliderContainer(false);
+    }, transitionDuration);
   }
-});
+  enableSliding(event.srcElement);
+};
+
+const prevPhoto = event => {
+  if (isSliding) return;
+  if (currentImageIndex > 1) {
+    currentImageIndex--;
+    moveSliderContainer();
+  } else {
+    currentImageIndex--;
+    moveSliderContainer();
+    setTimeout(() => {
+      currentImageIndex = imagesCount;
+      moveSliderContainer(false);
+    }, transitionDuration);
+  }
+  enableSliding(event.srcElement);
+};
+
+nextButton.addEventListener("click", event => nextPhoto(event));
+prevButton.addEventListener("click", event => prevPhoto(event));
+cloneImages();

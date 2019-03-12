@@ -3,7 +3,7 @@
   margin: auto;
   width: 800px;
   height: 480px;
-  overflow: hidden;
+  /*  overflow: hidden; */
 }
 .carousel > div.slider {
   position: absolute;
