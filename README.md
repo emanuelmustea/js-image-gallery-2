@@ -1,1 +1,1 @@
-# js-image-gallery-2
+# js-image-gallery-2 - version1
