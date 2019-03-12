@@ -45,7 +45,9 @@ const moveSliderContainer = (animate = true) => {
   }
 };
 const nextPhoto = event => {
-  if (isSliding) return;
+  if (isSliding) {
+    return;
+  }
   if (currentImageIndex < imagesCount) {
     currentImageIndex++;
     moveSliderContainer();
@@ -61,7 +63,9 @@ const nextPhoto = event => {
 };
 
 const prevPhoto = event => {
-  if (isSliding) return;
+  if (isSliding) {
+    return;
+  }
   if (currentImageIndex > 1) {
     currentImageIndex--;
     moveSliderContainer();
@@ -76,6 +80,6 @@ const prevPhoto = event => {
   enableSliding(event.srcElement);
 };
 
-nextButton.addEventListener("click", event => nextPhoto(event));
-prevButton.addEventListener("click", event => prevPhoto(event));
+nextButton.addEventListener("click", nextPhoto);
+prevButton.addEventListener("click", prevPhoto);
 cloneImages();
